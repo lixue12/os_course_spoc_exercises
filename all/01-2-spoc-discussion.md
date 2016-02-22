@@ -169,8 +169,8 @@
 
 请编写一个小程序，在v9-cpu下，能够产生各种异常/中断
 
->　https://github.com/JingqingZ/v9-cpu/blob/master/root/usr/inter.c
+>  https://github.com/JingqingZ/v9-cpu/blob/master/root/usr/inter.c
 
 请编写一个小程序，在v9-cpu下，能够统计并显示内存大小
 
->　https://github.com/JingqingZ/v9-cpu/blob/master/root/usr/memsize.c
+>  https://github.com/JingqingZ/v9-cpu/blob/master/root/usr/memsize.c
