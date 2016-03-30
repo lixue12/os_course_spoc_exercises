@@ -61,6 +61,8 @@ proc_init(void) {
 
     assert(idleproc != NULL && idleproc->pid == 0);
     assert(initproc != NULL && initproc->pid == 1);
+    
+    //修改内容
     cprintf("idleproc pid = %d, initproc pid = %d\n", idleproc->pid, initproc->pid);
 }
 ```
