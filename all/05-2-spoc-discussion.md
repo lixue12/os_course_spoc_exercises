@@ -1,9 +1,11 @@
-#lec10 进程／线程控制spoc练习
+#lec12 进程／线程控制spoc练习
 
 ## SPOC个人练习
-### 进程切换
+### 12.1 进程切换
 
-(1)ucore的进程控制块数据结构是如何组织的？主要字段分别表示什么？有哪些函数对它进行了修改？有哪些函数用到它？
+1. 进程切换的可能时机有哪些？
+2. 分析ucore的进程切换代码，说明ucore的进程切换触发时机和进程切换的判断时机都有哪些。
+3. ucore的进程控制块数据结构是如何组织的？主要字段分别表示什么？有哪些函数对它进行了修改？有哪些函数用到它？
 ```
 arch_proc_struct
 mm_struct
@@ -12,25 +14,69 @@ wait_state
 run_link、list_link、hash_link
 ```
 
-### 进程创建
+### 12.2 进程创建
 
-(1)fork()的返回值是唯一的吗？父进程和子进程的返回值是不同的。请找到相应的赋值代码。
+1. fork()的返回值是唯一的吗？父进程和子进程的返回值是不同的。请找到相应的赋值代码。
+2. 新进程创建时的进程标识是如何设置的？请指明相关代码。
+3. fork()的例子中进程标识的赋值顺序说明进程的执行顺序。
+4. 请在ucore启动时显示空闲进程（idleproc）和初始进程（initproc）的进程标识。
+- 修改 kern/process/proc.c 中的proc_init()函数
+```
+void
+proc_init(void) {
+    int i;
 
-(2)新进程创建时的进程标识是如何设置的？请指明相关代码。
+    list_init(&proc_list);
+    for (i = 0; i < HASH_LIST_SIZE; i ++) {
+        list_init(hash_list + i);
+    }
 
-(3)fork()的例子中进程标识的赋值顺序说明进程的执行顺序。
+    if ((idleproc = alloc_proc()) == NULL) {
+        panic("cannot alloc idleproc.\n");
+    }
 
-(4)请在ucore启动时显示空闲进程（idleproc）和初始进程（initproc）的进程标识。
+    idleproc->pid = 0;
+    idleproc->state = PROC_RUNNABLE;
+    idleproc->kstack = (uintptr_t)bootstack;
+    idleproc->need_resched = 1;
+    
+    if ((idleproc->filesp = files_create()) == NULL) {
+        panic("create filesp (idleproc) failed.\n");
+    }
+    files_count_inc(idleproc->filesp);
+    
+    set_proc_name(idleproc, "idle");
+    nr_process ++;
 
-### 进程加载
+    current = idleproc;
 
-(1)加载进程后，新进程进入就绪状态，它开始执行时的第一条指令的位置，在elf中保存在什么地方？在加载后，保存在什么地方？
+    int pid = kernel_thread(init_main, NULL, 0);
+    if (pid <= 0) {
+        panic("create init_main failed.\n");
+    }
 
->进程等待与退出
+    initproc = find_proc(pid);
+    set_proc_name(initproc, "init");
 
-(2)试分析wait()和exit()的结果放在什么地方？exit()是在什么时候放进去的？wait()在什么地方取到出的？
+    assert(idleproc != NULL && idleproc->pid == 0);
+    assert(initproc != NULL && initproc->pid == 1);
+    
+    cprintf("idleproc pid = %d, initproc pid = %d\n", idleproc->pid, initproc->pid);
+}
+```
+5. 请在ucore启动时显示空闲线程（idleproc）和初始进程(initproc)的进程控制块中的“pde_t *pgdir”的内容。它们是否一致？为什么？
 
-(3)试分析sleep()系统调用的实现。在什么地方设置的定时器？它对应的等待队列是哪个？它的唤醒操作在什么地方？
+### 12.3 进程加载
+
+1. 加载进程后，新进程进入就绪状态，它开始执行时的第一条指令的位置，在elf中保存在什么地方？在加载后，保存在什么地方？
+2. 第一个用户进程执行的代码在哪里？它是什么时候加载到内存中的？
+
+### 12.4 进程等待与退出
+
+1. 试分析wait()和exit()的结果放在什么地方？exit()是在什么时候放进去的？wait()在什么地方取到出的？
+2. 试分析ucore操作系统内核是如何把子进程exit()的返回值传递给父进程wait()的？
+2. 试分析sleep()系统调用的实现。在什么地方设置的定时器？它对应的等待队列是哪个？它的唤醒操作在什么地方？
+3. 通常的函数调用和函数返回都是一一对应的。有不是一一对应的例外情况？如果有，请举例说明。
 
 ## SPOC小组思考题
 
