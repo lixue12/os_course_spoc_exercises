@@ -21,11 +21,11 @@ run_link、list_link、hash_link
 3. fork()的例子中进程标识的赋值顺序说明进程的执行顺序。
 4. 请在ucore启动时显示空闲进程（idleproc）和初始进程（initproc）的进程标识。
 
-> 修改 kern/process/proc.c 中的proc_init()函数
+- 修改 kern/process/proc.c 中的proc_init()函数
 ```
 void
 proc_init(void) {
-    int i;
+     int i;
 
     list_init(&proc_list);
     for (i = 0; i < HASH_LIST_SIZE; i ++) {
@@ -61,7 +61,6 @@ proc_init(void) {
 
     assert(idleproc != NULL && idleproc->pid == 0);
     assert(initproc != NULL && initproc->pid == 1);
-    
     cprintf("idleproc pid = %d, initproc pid = %d\n", idleproc->pid, initproc->pid);
 }
 ```
