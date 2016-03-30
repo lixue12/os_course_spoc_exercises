@@ -20,7 +20,7 @@ run_link、list_link、hash_link
 2. 新进程创建时的进程标识是如何设置的？请指明相关代码。
 3. fork()的例子中进程标识的赋值顺序说明进程的执行顺序。
 4. 请在ucore启动时显示空闲进程（idleproc）和初始进程（initproc）的进程标识。
-- 修改 kern/process/proc.c 中的proc_init()函数
+> 修改 kern/process/proc.c 中的proc_init()函数
 ```
 void
 proc_init(void) {
