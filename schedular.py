@@ -85,7 +85,9 @@ if options.solve == True:
     if options.policy == 'FIFO':
         thetime = 0
         print 'Execution trace:'
-		#YOUR CODE
+        for j in joblist:
+            print '  [ time %3d ] Run job %3d for %.2f secs ( DONE at %.2f )' % (thetime, j[0], j[1], thetime + j[1])
+            thetime += j[1]
          
         print '\nFinal statistics:'
         t     = 0.0
@@ -136,15 +138,15 @@ if options.solve == True:
                 response[jobnum] = thetime
             currwait = thetime - lastran[jobnum]
             wait[jobnum] += currwait
-            ranfor = 0
+            ranfor = 1
             if runtime > quantum:
-				#YOUR CODE
+                runtime = runtime - ranfor
                 print '  [ time %3d ] Run job %3d for %.2f secs' % (thetime, jobnum, ranfor)
                 runlist.append([jobnum, runtime])
             else:
                 #YOUR CODE
-                print '  [ time %3d ] Run job %3d for %.2f secs ( DONE at %.2f )' % (thetime, jobnum, ranfor, thetime + ranfor)
-                turnaround[jobnum] = thetime + ranfor
+                print '  [ time %3d ] Run job %3d for %.2f secs ( DONE at %.2f )' % (thetime, jobnum, ranfor, thetime + runtime)
+                turnaround[jobnum] = thetime + runtime
                 jobcount -= 1
             thetime += ranfor
             lastran[jobnum] = thetime
